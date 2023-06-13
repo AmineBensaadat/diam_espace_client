@@ -2319,41 +2319,12 @@ var toutesLesPolicesAuto = {
 									});
 								}
 							},
-							{
-									css: 'export_pdf_button',
-									view: "button", label: "<img src='./tools/images/pdf-icon-png-2056.png' style='height:82%; width:auto; margin-bottom: -3%;'> Export PDF", width: 120, click:function(){
-									webix.toPDF($$(idgridPoliceAuto), {
-										filename: "TOUTES-LES-POLICES-AUTO",
-										orientation:"landscape",
-										name: "Films",
-										columns:{
-												"Marque":{header: "Marque",width: 70,},
-												"Matricule":{header: "Matricule",width: 70},
-												"Avenant":{header: "Avenant",width: 100},
-												"Date_effet":{header: "Date_effet",width: 80},
-												"Date_eche":{header: "Date_eche",width: 80},
-												"Ptotale":{header: "Prime Totale",width: 80,template:function(obj){
-														return obj.Ptotale;
-													}
-												},
-												"Prorata":{header: "Prorata",width: 80,template:function(obj){
-														return obj.Prorata;
-													}
-												},
-												"SinistreEncours":{header: "Sinistre en cours",width: 120 ,template:function(obj){
-													return obj.SinistreEncours;
-												}
-											}
-										}
-									});
-								}
-							}
 					]
 				},
 				{	
 					type:"clean",
 					padding:{
-						top:5, bottom:10, left:20, right:30
+						top:5, bottom:0, left:20, right:30
 					},
 					cols:[
 						{
@@ -2410,17 +2381,29 @@ var toutesLesPolicesAuto = {
 								"onViewShow":function(id, e, trg){ 
 									$$(idgridPoliceAuto).scrollTo(1,1);
 								},
-								// onBeforeLoad:function(){
-								// 	this.showOverlay('<img src="https://thumbs.gfycat.com/FarflungGrandAbyssiniangroundhornbill-size_restricted.gif" />');
-								// },
-								// onAfterLoad:function(){
-								// 	this.hideOverlay();
-								// }
+								onBeforeLoad:function(){
+									this.showOverlay(loadingDIV);
+								},
+								onAfterLoad:function(){
+									this.hideOverlay();
+								}
 							},
 							data: []
 						},
+						
 					]
 				},
+				{
+					type:"clean",
+					padding:{
+						top:0, bottom:0, left:20, right:0
+					},
+					cols:[
+						{
+					height:40,
+					view:"label", template:"<h4> <span id='nbRowsAllPoliceV'></span> ligne trouvés</h4> ", css:"h4",
+						}]
+				}
 			]
 		}
 	]
@@ -2435,7 +2418,8 @@ function renderAllPoliceAuto(){
 	doc=AddParam(doc,1,1,"IdSession_",mySession.getGuid(),"O");
 	var xml=XML2String(doc);
 	ExecuteCommand("P", "AOOA", xml, function (obj, data, args) {
-
+		 document.getElementById("nbRowsAllPoliceV").innerHTML = data.length;
+	
 		if(data.length>0){
 			
 			var jdata = csv2JSON(data,String.fromCharCode(3),String.fromCharCode(2),myIdPoliceAuto);
@@ -3016,6 +3000,7 @@ function renderficheVehicule(idPolice, idHistorique, matriculeV){
 				
 
 				var obj = {};
+				if(jdata[0].length> 0){
 				for(var j = 0; j < jdata[0].length; j++) {
 					if(tmp[j]=="MatriculeV"){
 						//matricule in header
@@ -3035,6 +3020,7 @@ function renderficheVehicule(idPolice, idHistorique, matriculeV){
 							obj[tmp[j]]=jdata[0][j];  
 							break;
 					}
+				}
 				}; 
 				$$(idformVehiculeF).setValues(obj);   
 			} else if((doc[2]==="VEHICULESIN")&&(doc[3]==="SELECT")&&(doc[5].length>=0)){
@@ -3541,20 +3527,7 @@ var ficheAdherent = {
 
 
 																		
-																				{	
-																					height:20,
-																					cols:[
-																						{
-																							view: "label", label:"Bénéficiaires (ayant droits)", css:" labelFiche grey Bold",
-																							align:"left", 
-																						},
-																						{
-																							view: "label", label:"Parents",
-																							id:"BeneficiaireAdh", name:"BeneficiaireAdh", css:"textUppercase titre3Fiche Bold blue",
-																							align:"right",
-																						},
-																					]
-																				},
+																				
 																				{	
 																					height:20,
 																					cols:[
@@ -3771,22 +3744,22 @@ var ficheAdherent = {
 																					]
 																				},
 
-																				{
+																				// {
 																							
-																					rows:[
-																						{	
-																							height:20,
-																							view: "label", label:"RIB", css:"labelFiche grey Bold",
-																							align:"left", 
-																						},
-																						{	
-																							height:20,
-																							view: "label", label:"12796857438987076958",
-																							id:"NumCompteAdh", name:"NumCompteAdh", css:"textUppercase titre3Fiche Bold blue",
-																							align:"left",
-																						},
-																					]
-																				},
+																				// 	rows:[
+																				// 		{	
+																				// 			height:20,
+																				// 			view: "label", label:"RIB", css:"labelFiche grey Bold",
+																				// 			align:"left", 
+																				// 		},
+																				// 		{	
+																				// 			height:20,
+																				// 			view: "label", label:"12796857438987076958",
+																				// 			id:"NumCompteAdh", name:"NumCompteAdh", css:"textUppercase titre3Fiche Bold blue",
+																				// 			align:"left",
+																				// 		},
+																				// 	]
+																				// },
 																				
 								
 																			]
@@ -3901,6 +3874,7 @@ function renderficheAdherent(item,idPolice, Police){
 			} else if((doc[2]==="ADHERENTFICHE")&&(doc[3]==="SELECT")&&(doc[5].length>=0)){
 				var jdata = csv2ARRAY(doc[5],String.fromCharCode(3),String.fromCharCode(2));
 				var obj = {};
+				if(jdata.length > 0){
 				for(var j = 0; j < jdata[0].length; j++) {
 					switch (formIdVal[j]){
 						case "SEXEAdh":
@@ -3921,7 +3895,9 @@ function renderficheAdherent(item,idPolice, Police){
 						default:
 							obj[formIdVal[j]]=jdata[0][j];  
 					}
-				}; 
+				}
+				}
+				; 
 				$$("idformAdherentF").setValues(obj);   
 			} else if((doc[2]==="ADHERENTAFFILIE")&&(doc[3]==="SELECT")&&(doc[5].length>=0)){
 				var grid = $$("idgridAdhAff");
@@ -5496,7 +5472,7 @@ var sinistresVehicules = {
 								{ id:myIdHSinVeh[4], header:[ {text:"D.Sinistre", css:{'text-align':'center'} },{ content:"textFilter" } ], minWidth:90, sort:'ntsDate', css:{'text-align':'center'},  format: webix.Date.dateToStr("%d/%m/%Y"),fillspace:true, tooltip:false,},
 								{ id:myIdHSinVeh[6], header:[ {text:"D.Déclaration", css:{'text-align':'center'} },{ content:"textFilter" } ], sort:'ntsDate', css:{'text-align':'center'},  format: webix.Date.dateToStr("%d/%m/%Y"),fillspace:true, tooltip:false,},
 								{ id:myIdHSinVeh[5], header:[ {text:"Réf. Sinistre", css:{'text-align':'center'} },{ content:"textFilter" } ], sort:"string",fillspace:true, css:{'text-align':'center'},tooltip:false,},
-								{ id:myIdHSinVeh[3], header:[ {text:"Conducteur", css:{'text-align':'center'} },{ content:"textFilter" } ], sort:"string",fillspace:true, css:{'text-align':'left'}, tooltip:false,},
+								{ id:myIdHSinVeh[3], header:[ {text:"Assuré", css:{'text-align':'center'} },{ content:"textFilter" } ], sort:"string",fillspace:true, css:{'text-align':'left'}, tooltip:false,},
 								{ id:myIdHSinVeh[2], header:[ {text:"Matricule", css:{'text-align':'center'} },{ content:"textFilter" } ], sort:"string",fillspace:true, css:{'text-align':'center'}, tooltip:false,},
 								{ id:myIdHSinVeh[1], header:[ {text:"Marque", css:{'text-align':'center'} },{ content:"selectFilter" } ], sort:"string", fillspace:true, css:{'text-align':'center', 'font-weight':'bold'},tooltip:false,},
 								{ id:myIdHSinVeh[7], header:[{text:"Expert", sort:"string", css:{'text-align':'center'} }],  template:"{common.rcheckboxON()}", css:{'text-align':'center'}},
@@ -6658,20 +6634,7 @@ var ficheDossierSin = {
 																						},
 																					]
 																				},
-																				{	
-																					height:20,
-																					cols:[
-																						{
-																							view: "label", label:"Montant couvert", css:"labelFiche grey Bold",
-																							align:"left", 
-																						},
-																						{
-																							view: "label", label:"",
-																							id:"MTENGAGEMAL", name:"MTENGAGEMAL", css:"textUppercase titre3Fiche Bold blue",
-																							align:"right",
-																						},
-																					]
-																				},
+																				
 																				{	
 																					height:20,
 																					cols:[
@@ -6804,6 +6767,7 @@ var ficheDossierSin = {
 
 };
 function renderSinistreDosMaladie(arr_){
+		
 	$$("numDossierMAL").setValue(arr_['idSinistre']);
 	var doc=AddAction(null,1,"FICHESINMALADIE","SELECT","AAF","O");
 	doc=AddParam(doc,1,0,"IdUser_",mySession.getIdUser(),"O");
@@ -6813,9 +6777,10 @@ function renderSinistreDosMaladie(arr_){
 	var xml=XML2String(doc);
 	ExecuteCommand("P", "AOOA", xml, function (obj, data, args) {
 		var jdata = csv2ARRAY(data,String.fromCharCode(3),String.fromCharCode(2));
+		console.log(jdata);
 		var tmp = ["idDecompteMAL", "IdPoliceMAL" , "IdAdherentMAL",  "AdherentMAL", "IdPATIENTMAL", "PatientMAL", "ContreVisiteMAL", "DateEditionCVMAL", "DateLimiteCVMAL" ,"MedecinCVMAL",
 			"StatutCVMAL", "LotMAL", "IdNatMALADIEMAL", "NatureMaladieMAL", "MedecinMAL", "SpecialiteMedecinMAL", "DATEVISITEMAL", "DATERECEPTMAL",
-			"DATESAISIEMAL", "StatusMAL", "DateStatusMAL", "DATEREMBMAL", "MTENGAGEMAL",  "MTDeclareMAL", "MTBaseRembMAL", "MTREMBMAL"  ];			
+			"DATESAISIEMAL", "StatusMAL", "DateStatusMAL", "DATEREMBMAL", "MTENGAGEMAL",  "MTDeclareMAL", "MTBaseRembMAL", "MTREMBMAL",  ];			
 
 			var obj = {};
 				for(var j = 0; j < jdata[0].length; j++) {
@@ -7453,8 +7418,8 @@ var sinistresRDDosAutres = {
 								{ id:myIdHSinDosRD[5], header:[ {text:"Garantie(s) Sinistrée(s)", css:{'text-align':'center'} },{ content:"textFilter" } ], minWidth:170, sort:"string",css:{'text-align':'center'},fillspace:true},
 								{ id:myIdHSinDosRD[6], header:[ {text:"Montant Devis", css:{'text-align':'center'} },{ content:"textFilter" } ], minWidth:120, sort:"int", css:{'text-align':'center'}, format:myReelformat,fillspace:true, footer:{content:'totalColumns',css:{'text-align':'center'}}},
 								{ id:myIdHSinDosRD[7], header:[ {text:"Montant Réglé", css:{'text-align':'center'} },{ content:"textFilter" } ], minWidth:120, sort:"int", css:{'text-align':'center'}, format:myReelformat,fillspace:true, footer:{content:'totalColumns',css:{'text-align':'center'}}},
-								{ id:myIdHSinDosRD[8], header:[ {text:"ref.sin", css:{'text-align':'center'} },{ content:"textFilter" } ], minWidth:170, sort:"string",css:{'text-align':'center'},fillspace:true},
-								{ id:myIdHSinDosRD[9], header:[ {text:"Statut", css:{'text-align':'center'} } ], css:{'text-align':'center'}, sort:"string", template:"<span class=' #statutClass#'>#statut#</span>", minWidth:100,fillspace:true,},
+								{ id:myIdHSinDosRD[9], header:[ {text:"ref.sin", css:{'text-align':'center'} },{ content:"textFilter" } ], minWidth:170, sort:"string",css:{'text-align':'center'},fillspace:true},
+								{ id:myIdHSinDosRD[10], header:[ {text:"Statut", css:{'text-align':'center'} } ], css:{'text-align':'center'}, sort:"string", template:"<span class=' #statutClass#'>#statut#</span>", minWidth:100,fillspace:true,},
 							],
 							type:{
 								rcheckbox01:function(obj, common, value, config){
@@ -7518,6 +7483,7 @@ function renderSinistresDosRD(idPolice, police, dateDu, dateAu){
 	doc=AddParam(doc,1,6,"DateSinAU_",dateAu,"O");
 	var xml=XML2String(doc);
 	ExecuteCommand("P", "AOOA", xml, function (obj, data, args) {
+		
 		if(data.length>0){
 			var jdata = csv2JSON(data,String.fromCharCode(3),String.fromCharCode(2),myIdHSinDosRD);
 			grid.parse(jdata, "json");
@@ -12687,7 +12653,7 @@ var tableauBord2 = {
                                         width: 280,
                                         css:""
 									},
-									template:'<div class="tbHome3 #colorNB# statut_#Statut#" > <div class="tbDet1"> <span class="titre statut_#Statut#"> #Title#</span> <span class="valeur statut_#Statut#"" data=#valeur# style="opacity: #opacity#">0</span> <span class="sousTitre" style="opacity: #opacity#">Prime Annuelle</span> </div> <div class="tbDet2"> <img #img_center# src="./tools/images/#imageSTR#" width="auto" /> <div class="rowView pR5" style="opacity: #opacity#"> <span class="valeur statut_#Statut#"" data=#MtRegle#>0</span> <span class="titre subTitle2">MONTANT REGLÉ</span> <span class="valeur statut_#Statut#"" data="#Solde#">0</span> <span class="titre">RESTANT DU</span> </div> </div> </div>',
+									template:'<div class="tbHome3 #colorNB# statut_#Statut#" > <div class="tbDet1"> <span class="titre statut_#Statut#"> #Title#</span> <span class="valeur statut_#Statut#"" data=#valeur# style="opacity: #opacity#">0</span> <span class="sousTitre" style="opacity: #opacity#">Prime Annuelle à date</span> </div> <div class="tbDet2"> <img #img_center# src="./tools/images/#imageSTR#" width="auto" /> <div class="rowView pR5" style="opacity: #opacity#"> <span class="valeur statut_#Statut#"" data=#MtRegle#>0</span> <span class="titre subTitle2">MONTANT REGLÉ</span> <span class="valeur statut_#Statut#"" data="#Solde#">0</span> <span class="titre">RESTANT DU</span> </div> </div> </div>',
 									ready:function(){
 										if (!this.count()){ //if no data are available
 											webix.extend(this, webix.OverlayBox);
