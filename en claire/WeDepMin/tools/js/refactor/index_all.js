@@ -2401,7 +2401,7 @@ var toutesLesPolicesAuto = {
 					cols:[
 						{
 					height:40,
-					view:"label", template:"<h4> <span id='nbRowsAllPoliceV'></span> ligne trouvés</h4> ", css:"h4",
+					view:"label", template:"<h4 id='nbRowsAllPoliceV'> </h4> ", css:"h4",
 						}]
 				}
 			]
@@ -2418,7 +2418,7 @@ function renderAllPoliceAuto(){
 	doc=AddParam(doc,1,1,"IdSession_",mySession.getGuid(),"O");
 	var xml=XML2String(doc);
 	ExecuteCommand("P", "AOOA", xml, function (obj, data, args) {
-		 document.getElementById("nbRowsAllPoliceV").innerHTML = data.length;
+		 document.getElementById("nbRowsAllPoliceV").innerHTML = data.split(String.fromCharCode(3)).length + " ligne trouvés";
 	
 		if(data.length>0){
 			
@@ -2565,10 +2565,22 @@ var policeVehicules = {
 						},
 					]
 				},
+				{
+					type:"clean",
+					padding:{
+						top:0, bottom:0, left:20, right:0
+					},
+					cols:[
+						{
+					height:40,
+					view:"label", template:"<h4 id='nbRowsAuto'> </h4> ", css:"h4",
+						}]
+				}
 				
 
 			]
-		}
+		},
+		
 	]
 
 };
@@ -2587,9 +2599,10 @@ function renderVehiculesPolice(item){
 	doc=AddParam(doc,1,2,"Idpolice_",item.idPolice,"O");
 	var xml=XML2String(doc);
 	ExecuteCommand("P", "AOOA", xml, function (obj, data, args) {
-
+		
 		if(data.length>0){
 			var jdata = csv2JSON(data,String.fromCharCode(3),String.fromCharCode(2),myIdHVehiculesP);
+			document.getElementById("nbRowsAuto").innerHTML = data.split(String.fromCharCode(3)).length + " ligne trouvés";
 			grid.parse(jdata, "json");
 		}
 	}, function (obj, data, args) {
@@ -3233,7 +3246,7 @@ var maladieAdherents = {
 				{	
 					type:"clean",
 					padding:{
-						top:20, bottom:10, left:20, right:10
+						top:20, bottom:0, left:20, right:10
 					},
 					cols:[
 						{	
@@ -3292,8 +3305,20 @@ var maladieAdherents = {
 							data: [
 							]
 						},
+					
 					]
 				},
+				{
+					type:"clean",
+					padding:{
+						top:0, bottom:0, left:20, right:0
+					},
+					cols:[
+						{
+					height:40,
+					view:"label", template:"<h4 id='nbRowsPoliceMaladie'> </h4> ", css:"h4",
+						}]
+				}
 			]
 		}
 	]
@@ -3310,8 +3335,11 @@ function rendermaladieAdherents(item){
 	doc=AddParam(doc,1,2,"Idpolice_",item.idPolice,"O");
 	var xml=XML2String(doc);
 	ExecuteCommand("P", "AOOA", xml, function (obj, data, args) {
+		
 		if(data.length>0){
 			var jdata = csv2JSON(data,String.fromCharCode(3),String.fromCharCode(2),myIdHMaladieAh);
+			document.getElementById("nbRowsPoliceMaladie").innerHTML = data.split(String.fromCharCode(3)).length + " ligne trouvés";
+			console.log(jdata);
 			grid.parse(jdata, "json");
 		}
 	}, function (obj, data, args) {
@@ -3852,11 +3880,12 @@ var ficheAdherent = {
 
 function renderficheAdherent(item,idPolice, Police){
 	$$("idPoliceFichAdh").setValue(Police);
-
+	console.log(item["IdAdherent"]);
 	var doc=AddAction(null,1,"ADHERENTFICHE","SELECT","AAD","O");
 	doc=AddParam(doc,1,0,"IdUser_",mySession.getIdUser(),"O");
 	doc=AddParam(doc,1,1,"IdSession_",mySession.getGuid(),"O");
 	doc=AddParam(doc,1,2,"Idpolice_",idPolice,"O");
+	doc=AddParam(doc,1,3,"IdAdherent_",item["IdAdherent"],"O");
 
 	doc=AddAction(doc,2,"ADHERENTAFFILIE","SELECT","AAE","O");
 	doc=AddParam(doc,2,0,"IdUser_",mySession.getIdUser(),"O");
@@ -3913,6 +3942,7 @@ function renderficheAdherent(item,idPolice, Police){
 
 
 function showficheAdherent(_item, _idPolice,_categorie) {
+	
 		renderficheAdherent(_item,_idPolice,_categorie );
 		$$("ficheAdherent").show();
 }
@@ -3942,7 +3972,7 @@ var toutesLesPolicesMaritime = {
 							}  
 						},
 						{
-							view:"label", template:"<h1>Toutes polices : Maritime</h1> ", css:"h1 textUppercase",
+							view:"label", template:"<h1>Toutes polices : Transport</h1> ", css:"h1 textUppercase",
 						}
 					]
 				},
@@ -4373,6 +4403,17 @@ var avenantsRD = {
 						},
 					]
 				},
+				{
+					type:"clean",
+					padding:{
+						top:0, bottom:0, left:20, right:0
+					},
+					cols:[
+						{
+					height:40,
+					view:"label", template:"<h4 id='nbRowsAllPoliceRD'> </h4> ", css:"h4",
+						}]
+				}
 			]
 		}
 	]
@@ -4394,6 +4435,7 @@ function renderAvenantsRD(item){
 	ExecuteCommand("P", "AOOA", xml, function (obj, data, args) {
 		if(data.length>0){
 			var jdata = csv2JSON(data,String.fromCharCode(3),String.fromCharCode(2),myIdHAvnRD);
+			document.getElementById("nbRowsAllPoliceRD").innerHTML = data.split(String.fromCharCode(3)).length + " ligne trouvés";
 			grid.parse(jdata, "json");
 		}
 
@@ -4421,7 +4463,7 @@ var policesMaritime = {
 					cols:[
 						{view:"label", template:"", width:20, css:"icon-return"},
 						{
-							view:"label", template:"<h1>Mes polices maritimes</h1> ", css:"h1",
+							view:"label", template:"<h1>Mes polices transport</h1> ", css:"h1",
 						},
 				]
 				},
@@ -4534,7 +4576,7 @@ var productionCorps = {
 							}  
 						},
 						{
-							view:"label", template:"<h1>Mes polices : Maritime</h1> ", css:"h1 textUppercase",
+							view:"label", template:"<h1>Mes polices : Transport</h1> ", css:"h1 textUppercase",
 						},
 					]
 				},
@@ -4655,7 +4697,7 @@ var facultesOrdres = {
 							}  
 						},
 						{
-							view:"label", template:"<h1>Mes polices : Maritime</h1> ", css:"h1 textUppercase",
+							view:"label", template:"<h1>Mes polices : Transport</h1> ", css:"h1 textUppercase",
 						},
 						
 					]
@@ -4735,6 +4777,18 @@ var facultesOrdres = {
 						},
 					]
 				},
+				{
+					type:"clean",
+					padding:{
+						top:0, bottom:0, left:20, right:0
+					},
+					cols:[
+						{
+					height:40,
+					view:"label", template:"<h4 id='nbRowsAPoliceMaritime'> </h4> ", css:"h4",
+						}]
+				}
+				
 				
 
 			]
@@ -4763,6 +4817,7 @@ function renderFacultesOrdres(item){
 
 		if(data.length>0){
 			var jdata = csv2JSON(data,String.fromCharCode(3),String.fromCharCode(2),myIdHFacMar);
+			document.getElementById("nbRowsAPoliceMaritime").innerHTML = data.split(String.fromCharCode(3)).length + " ligne trouvés";
 			grid.parse(jdata, "json");
 		}	
 
@@ -4874,7 +4929,7 @@ var avenantsAT = {
 	css:"bg-main",
 	type:"clean",
 	margin:0,
-	padding:3,
+	padding:0,
 	cols:[
 		{
 			rows:[
@@ -4908,7 +4963,7 @@ var avenantsAT = {
 				{	
 					type:"clean",
 					padding:{
-						top:20, bottom:10, left:30, right:10
+						top:20, bottom:0, left:30, right:10
 					},
 					cols:[
 						{
@@ -4956,6 +5011,17 @@ var avenantsAT = {
 						},
 					]
 				},
+				{
+					type:"clean",
+					padding:{
+						top:0, bottom:0, left:20, right:0
+					},
+					cols:[
+						{
+					height:40,
+					view:"label", template:"<h4 id='nbRowsAllPoliceAT'> </h4> ", css:"h4",
+						}]
+				}
 			]
 		}
 	]
@@ -4976,6 +5042,7 @@ function renderAvenantsAT(item){
 	ExecuteCommand("P", "AOOA", xml, function (obj, data, args) {
 		if(data.length>0){
 			var jdata = csv2JSON(data,String.fromCharCode(3),String.fromCharCode(2),myIdHAvnAT);
+			document.getElementById("nbRowsAllPoliceAT").innerHTML = data.split(String.fromCharCode(3)).length + " ligne trouvés";
 			grid.parse(jdata, "json");
 		}
 	}, function (obj, data, args) {
@@ -5445,7 +5512,7 @@ var sinistresVehicules = {
 				{	
 					type:"clean",
 					padding:{
-						top:0, bottom:10, left:20, right:10
+						top:0, bottom:0, left:20, right:10
 					},
 					cols:[
 						{
@@ -5523,6 +5590,17 @@ var sinistresVehicules = {
 						},
 					]
 				},
+				{
+					type:"clean",
+					padding:{
+						top:0, bottom:0, left:20, right:0
+					},
+					cols:[
+						{
+					height:40,
+					view:"label", template:"<h4 id='nbRowsSinistreAuto'> </h4> ", css:"h4",
+						}]
+				}
 			]
 		}
 	]
@@ -5543,6 +5621,7 @@ function renderSinistresVehicules(idPolice, libPolice, dateDu, dateAu){
 	ExecuteCommand("P", "AOOA", xml, function (obj, data, args) {
 		if(data.length>0){
 			var jdata = csv2JSON(data,String.fromCharCode(3),String.fromCharCode(2),myIdHSinVeh);
+			document.getElementById("nbRowsSinistreAuto").innerHTML = data.split(String.fromCharCode(3)).length + " Ligne trouvés";
 			grid.parse(jdata, "json");
 		}
 	}, function (obj, data, args) {
@@ -6223,6 +6302,17 @@ var sinistresDosMaladie = {
 						},
 					]
 				},
+				{
+					type:"clean",
+					padding:{
+						top:0, bottom:0, left:20, right:0
+					},
+					cols:[
+						{
+					height:40,
+					view:"label", template:"<h4 id='nbRowsSinistrMaladie'> </h4> ", css:"h4",
+						}]
+				}
 			]
 		}
 	]
@@ -6245,6 +6335,7 @@ function renderSinistresDosMaladie(idPolice, libPolice, dateDu, dateAu){
 	ExecuteCommand("P", "AOOA", xml, function (obj, data, args) {
 		if(data.length>0){
 			var jdata = csv2JSON(data,String.fromCharCode(3),String.fromCharCode(2),myIdHSinDosMal);
+			document.getElementById("nbRowsSinistrMaladie").innerHTML = data.split(String.fromCharCode(3)).length + " Ligne trouvés";
 			grid.parse(jdata, "json");
 		}
 	}, function (obj, data, args) {
@@ -6738,7 +6829,7 @@ var ficheDossierSin = {
 																						},
 																						{	
 																							height:20,
-																							view: "label", label:"",
+																							view: "label", label:"ss",
 																							id:"StatutCVMAL", name:"StatutCVMAL", css:"textUppercase titre3Fiche Bold blue",
 																							align:"right",
 																						},
@@ -6777,13 +6868,14 @@ function renderSinistreDosMaladie(arr_){
 	var xml=XML2String(doc);
 	ExecuteCommand("P", "AOOA", xml, function (obj, data, args) {
 		var jdata = csv2ARRAY(data,String.fromCharCode(3),String.fromCharCode(2));
-		console.log(jdata);
+
 		var tmp = ["idDecompteMAL", "IdPoliceMAL" , "IdAdherentMAL",  "AdherentMAL", "IdPATIENTMAL", "PatientMAL", "ContreVisiteMAL", "DateEditionCVMAL", "DateLimiteCVMAL" ,"MedecinCVMAL",
 			"StatutCVMAL", "LotMAL", "IdNatMALADIEMAL", "NatureMaladieMAL", "MedecinMAL", "SpecialiteMedecinMAL", "DATEVISITEMAL", "DATERECEPTMAL",
-			"DATESAISIEMAL", "StatusMAL", "DateStatusMAL", "DATEREMBMAL", "MTENGAGEMAL",  "MTDeclareMAL", "MTBaseRembMAL", "MTREMBMAL",  ];			
-
+			"DATESAISIEMAL", "StatusMAL", "DateStatusMAL", "DATEREMBMAL", "MTENGAGEMAL",  "MTDeclareMAL", "MTBaseRembMAL", "MTREMBMAL","Etatcab" ];			
+		//console.log(jdata[0]);
 			var obj = {};
 				for(var j = 0; j < jdata[0].length; j++) {
+					console.log(jdata[0][j]);
 					switch (tmp[j]){
 	
 						case "StatusMAL":
@@ -6804,8 +6896,8 @@ function renderSinistreDosMaladie(arr_){
 							if(jdata[0][j]=="N")obj[tmp[j]]="Non";
 							break;
 						case "StatutCVMAL":
-							if(jdata[0][j]=="O")obj[tmp[j]]="Oui";
-							if(jdata[0][j]=="N")obj[tmp[j]]="Non";
+							obj[tmp[j]]= jdata[0][26]
+							//obj[tmp[j]]= "Saisie Int.";
 							break;
 							
 						case "MTENGAGEMAL":
@@ -6826,6 +6918,8 @@ function renderSinistreDosMaladie(arr_){
 							break;
 					}
 				}; 
+
+				//console.log(obj);
 				$$(idformDosSin).setValues(obj);   
 	}, function (obj, data, args) {
 		webix.message(data);
@@ -7389,7 +7483,7 @@ var sinistresRDDosAutres = {
 				{	
 					type:"clean",
 					padding:{
-						top:0, bottom:10, left:20, right:10
+						top:0, bottom:0, left:20, right:10
 					},
 					cols:[
 						{	
@@ -7464,6 +7558,17 @@ var sinistresRDDosAutres = {
 						},
 					]
 				},
+				{
+					type:"clean",
+					padding:{
+						top:0, bottom:0, left:20, right:0
+					},
+					cols:[
+						{
+					height:40,
+					view:"label", template:"<h4 id='nbRowsSinistreRD'> </h4> ", css:"h4",
+						}]
+				}
 			]
 		}
 	]
@@ -7486,6 +7591,7 @@ function renderSinistresDosRD(idPolice, police, dateDu, dateAu){
 		
 		if(data.length>0){
 			var jdata = csv2JSON(data,String.fromCharCode(3),String.fromCharCode(2),myIdHSinDosRD);
+			document.getElementById("nbRowsSinistreRD").innerHTML = data.split(String.fromCharCode(3)).length + " Ligne trouvés";
 			grid.parse(jdata, "json");
 		}
 	}, function (obj, data, args) {
@@ -7975,7 +8081,7 @@ var sinistresDosAT = {
                     {	
                         type:"clean",
                         padding:{
-                            top:0, bottom:10, left:20, right:10
+                            top:0, bottom:0, left:20, right:10
                         },
                         cols:[
                             {
@@ -8050,6 +8156,17 @@ var sinistresDosAT = {
                             },
                         ]
                     },
+					{
+						type:"clean",
+						padding:{
+							top:0, bottom:0, left:20, right:0
+						},
+						cols:[
+							{
+						height:40,
+						view:"label", template:"<h4 id='nbRowsSinistreAT'> </h4> ", css:"h4",
+							}]
+					}
                 ]
             }
         ]
@@ -8070,6 +8187,7 @@ var sinistresDosAT = {
         ExecuteCommand("P", "AOOA", xml, function (obj, data, args) {
             if(data.length>0){
                 var jdata = csv2JSON(data,String.fromCharCode(3),String.fromCharCode(2),myIdHSinDosAT);
+				document.getElementById("nbRowsSinistreAT").innerHTML = data.split(String.fromCharCode(3)).length + " Ligne trouvés";
                 grid.parse(jdata, "json");
             }
         }, function (obj, data, args) {
@@ -8317,7 +8435,7 @@ var sinistresMaritime = {
 					cols:[
 						{view:"label", template:"", width:20, css:"icon-return"},
 						{
-							view:"label", template:"<h1>Mes sinistres : Maritime</h1> ", css:"h1",
+							view:"label", template:"<h1>Mes sinistres : Transport</h1> ", css:"h1",
 						},
 						{ view:"button", type:"icon", css:"btn_all", icon:"mdi mdi-chart-pie", label:"Statistiques", width:150, margin: 8,
 							click:function(){
@@ -8441,7 +8559,7 @@ var sinistresDosMaritimeFac = {
 							}  
 						},
 						{
-							view:"label", template:"<h1>Mes sinistres : Maritime</h1> ", css:"h1 textUppercase",
+							view:"label", template:"<h1>Mes sinistres : Transport</h1> ", css:"h1 textUppercase",
 						},
 						{ 
 							padding:{
@@ -8647,6 +8765,18 @@ var sinistresDosMaritimeFac = {
 						},
 					]
 				},
+				{
+					type:"clean",
+					padding:{
+						top:0, bottom:0, left:20, right:0
+					},
+					cols:[
+						{
+					height:40,
+					view:"label", template:"<h4 id='nbRowsSinistreMaritime'> </h4> ", css:"h4",
+						}]
+				}
+				
 			]
 		}
 	]
@@ -8668,6 +8798,7 @@ function renderSinistresDosMaritimeFac(idPolice, police, dateDu, dateAu){
 	ExecuteCommand("P", "AOOA", xml, function (obj, data, args) {
 		if(data.length>0){
 			var jdata = csv2JSON(data,String.fromCharCode(3),String.fromCharCode(2),myIdHSinDosMarFac);
+			document.getElementById("nbRowsSinistreMaritime").innerHTML = data.split(String.fromCharCode(3)).length + " Ligne trouvés";
 			grid.parse(jdata, "json");
 		}
 	}, function (obj, data, args) {
@@ -8697,7 +8828,7 @@ var sinistresDosMaritimeCor = {
 							}  
 						},
 						{
-							view:"label", template:"<h1>Mes sinistres : Maritime</h1> ", css:"h1 textUppercase",
+							view:"label", template:"<h1>Mes sinistres : Transport</h1> ", css:"h1 textUppercase",
 						},
 					]
 				},
@@ -8960,7 +9091,7 @@ var toutesLesSinistreMaritime = {
 							}  
 						},
 						{
-							view:"label", template:"<h1>Toutes Sinistres : Maritime</h1> ", css:"h1 textUppercase",
+							view:"label", template:"<h1>Toutes Sinistres : Transport</h1> ", css:"h1 textUppercase",
 						}
 					]
 				},
@@ -11893,7 +12024,7 @@ var statistiquesSinistreMaritimePopup = {
 				css:"bg-main",
 				type:"space", 
 				borderless: true,
-				template: "<h1>Statistiques des sinistres Maritime </h1>",
+				template: "<h1>Statistiques des sinistres Transport </h1>",
 				height:50,
 			},
 			{
@@ -12968,7 +13099,7 @@ function renderHome2 (idTablBord1, idTablBord2, idTopBar){
 							
 							break;
 						case "Mar":
-							tmp[j]["Title"]="Maritime";
+							tmp[j]["Title"]="Transport";
 							tmp[j]["colorNB"]="color4";
 
 							if(tmp[j]["Statut"] == 1 ){
@@ -13023,7 +13154,7 @@ function renderHome2 (idTablBord1, idTablBord2, idTopBar){
 							tmp[j]["colorNB"]="color3";
 							break;
 						case "Mar":
-							tmp[j]["Title"]="Maritime";
+							tmp[j]["Title"]="Transport";
 							tmp[j]["colorNB"]="color4";
 							break;
 						case "AT":
@@ -13273,7 +13404,7 @@ var menu_data = [
 							[
 								{
 									id: "policesMaritime",
-									value: "Maritime",
+									value: "Transport",
 								},
 							] : 
 							[]
@@ -13334,7 +13465,7 @@ var menu_data = [
 						[
 							{
 								id: "sinistresMaritime",
-								value: "Maritime",
+								value: "Transport",
 							},
 						] : 
 						[]
@@ -13388,7 +13519,7 @@ var menu_data = [
 				},
 				{
 					id: "reclamationsMaritime",
-					value: "Maritime",
+					value: "Transport",
 				},
 				{
 					id: "reclamationsAT",
@@ -13678,7 +13809,7 @@ var footer = {
 			css:"",
 			view: "label",
 			id:"poweredBy-img",
-			template: "<a href='https://www.agma.ma/' target='_blank' class='poweredBy-img'><img src='./tools/images/logo-certification.jpg' style='height:40px; width:auto;'>© Copyright 2022 NT-SOFT - Tous Droits réservés  - Mentions légales</a>",
+			template: "<a href='https://www.nt-soft.ma/' target='_blank' class='poweredBy-img'><img src='./tools/images/logo-certification.jpg' style='height:40px; width:auto;'>© Copyright 2022 NT-SOFT - Tous Droits réservés  - Mentions légales</a>",
 			align: "center",
 			width: 0,
 		},
@@ -13692,7 +13823,7 @@ var resizeSidebar = function(e){
 		var sbColaps = $$("sidebar1").B.collapsed;
 		if(!sbColaps){
 			$$("sidebar1").toggle();
-			$$("logo-img").setValue("<img src='./tools/images/logo192.png' style='width:100%' alt=\"agma\">");
+			$$("logo-img").setValue("<img src='./tools/images/logo192.png' style='width:100%' alt=\"diam\">");
 			$$("portrait-bloc").show();
 		}else{
 			$$("portrait-bloc").hide();
@@ -13701,7 +13832,7 @@ var resizeSidebar = function(e){
 		var sbColaps = $$("sidebar1").B.collapsed;
 		if(sbColaps){
 			$$("sidebar1").toggle();
-			$$("logo-img").setValue("<img src='./tools/images/logo192.png' style='height:100%; width:auto;' alt=\"agma\">");
+			$$("logo-img").setValue("<img src='./tools/images/logo192.png' style='height:100%; width:auto;' alt=\"Nt-soft\">");
 			$$("portrait-bloc").hide();
 		}else{
 			$$("portrait-bloc").show();
