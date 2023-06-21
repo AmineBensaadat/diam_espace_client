@@ -22,9 +22,9 @@ var NtsSession, tmpstartTime;
     arrData['LIBUSER_'] = "";
     arrData['MATRICULE_'] = ""; //Matricule
     arrData['HOSTPRI_'] = "www.nt-soft.ma"//"192.168.100.99";//"196.12.235.242" 192.168.100.99
-    arrData['PORTPRI_'] = 9098;//8098;//8088
+    arrData['PORTPRI_'] = 9097;//8098;//8088
     arrData['HOSTPUB_'] = "www.nt-soft.ma"//"192.168.100.99";//"196.12.235.242" 192.168.100.99
-    arrData['PORTPUB_'] = 9098;//8098;//8088
+    arrData['PORTPUB_'] = 9097;//8098;//8088
     arrData['HOSTART_'] = "";
     arrData['PORTART_'] = 0;
     arrData['PATH'] = './/assets//images//'; 
